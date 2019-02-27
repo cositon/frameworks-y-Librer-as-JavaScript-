@@ -6,7 +6,7 @@ $(function(){
 	blanco(elemento)
 })
 var minimo=1
-var maximo=4
+var maximo=2
 var columnas=7
 var filas=8	
 
@@ -49,7 +49,44 @@ chequeo()
 	
 
 function chequeo(){
-		var pictures=$(".elemento")
+	var images=$(".col-1 .elemento")
+		var pictures=$(images)[0]
+		var hermanos=$(pictures).siblings()
+		var longitud=$(hermanos).length
+
+		for(var i=0;i<(longitud-2);i++){
+			var oniichan=$(images)[i]
+			var oniAtr=$(oniichan).attr("src")
+			bro1=$(hermanos)[i]
+			bro2=$(hermanos)[i+1]
+			var hermanosSRC1=$(bro1).attr("src")
+			var hermanosSRC2=$(bro2).attr("src")
+
+
+			if((oniAtr==hermanosSRC1)&&(oniAtr==hermanosSRC2)){
+				console.log(oniichan)
+				console.log(bro1)
+				console.log(bro2)
+				$(oniichan).addClass("eliminar")
+				$(bro1).addClass("eliminar")
+				$(bro2).addClass("eliminar")
+				
+				
+				var brother=true
+				while(brother){
+						var broNext=$(hermanos)[i+2]
+				var broNextAtr=$(broNext).attr("src")	
+					if((oniAtr==broNextAtr)&&(i!=(longitud-3))){
+					console.log(broNext)
+					$(broNext).addClass("eliminar")
+					i++
+				}else{brother=false}
+				}
+				
+						
+			}
+
+		}
 		
 	
 	
