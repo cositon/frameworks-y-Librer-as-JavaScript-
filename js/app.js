@@ -47,17 +47,14 @@ chequeo()
 			return imagenes
 }
 	
-/*******SELLECION DE FILAS*******/
-/*
+
 function chequeo(){
-
+/*******SELLECION DE COLUMNAS*******/
 	for(var n=0;n<8;n++){
-
 		var images=$(".col-"+[n]+" .elemento")
 		var pictures=$(images)[0]
 		var hermanos=$(pictures).siblings()
 		var longitud=$(hermanos).length
-
 		for(var i=0;i<(longitud-2);i++){
 			var oniichan=$(images)[i]
 			var oniAtr=$(oniichan).attr("src")
@@ -66,36 +63,68 @@ function chequeo(){
 			var hermanosSRC1=$(bro1).attr("src")
 			var hermanosSRC2=$(bro2).attr("src")
 
-
 			if((oniAtr==hermanosSRC1)&&(oniAtr==hermanosSRC2)){
-				console.log(oniichan)
-				console.log(bro1)
-				console.log(bro2)
 				$(oniichan).addClass("eliminar")
 				$(bro1).addClass("eliminar")
-				$(bro2).addClass("eliminar")
-				
-				
+				$(bro2).addClass("eliminar")				
 				var brother=true
 				while(brother){
 						var broNext=$(hermanos)[i+2]
 				var broNextAtr=$(broNext).attr("src")	
 					if((oniAtr==broNextAtr)&&(i!=(longitud-2))){
-					console.log(broNext)
 					$(broNext).addClass("eliminar")
 					i++
 				}else{brother=false}
 				}						
 			}
-		}		
+		}	
 	}		
-}*/
-function borrar(){
-	$(".eliminar").remove()
-	$(".eliminar").removeClass("eliminar")
-	
 }
 
-	
+/*******SELLECION DE FILAS*******/
+for(var m=0;m<8;m++){
+		var tablero=$(".panel-tablero")[0]
+		console.log(tablero)
+		var primerHijo=$(tablero).children()[0]
+		var hermanosFila=$(primerHijo).siblings()
+		console.log(primerHijo)
+		console.log(hermanosFila)
+		
+		var pictures=$(tablero)[0]
+		
+		var longitud=$(hermanosFila).length
+		for(var y=0;y<(longitud-2);y++){
+			var oniichan=$(tablero)[y]
+			var oniAtr=$(oniichan).attr("src")
+			bro1=$(hermanosFila)[y]
+			bro2=$(hermanosFila)[y+1]
+			var hermanosSRC1=$(bro1).attr("src")
+			var hermanosSRC2=$(bro2).attr("src")
+
+			if((oniAtr==hermanosSRC1)&&(oniAtr==hermanosSRC2)){
+				$(oniichan).addClass("eliminar")
+				$(bro1).addClass("eliminar")
+				$(bro2).addClass("eliminar")				
+				var brother=true
+				while(brother){
+						var broNext=$(hermanosFila)[y+2]
+				var broNextAtr=$(broNext).attr("src")	
+					if((oniAtr==broNextAtr)&&(y!=(longitud-2))){
+					$(broNext).addClass("eliminar")
+					y++
+				}else{brother=false}
+				}						
+			}
+		}	
+	}		
+
+
+/*
+function borrar(){
+	$(".eliminar").remove()
+	$(".eliminar").removeClass("eliminar")		
+}
+*/
+
 
 
