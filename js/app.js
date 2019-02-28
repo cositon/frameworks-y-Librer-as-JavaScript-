@@ -1,12 +1,12 @@
 $(function(){
 
-	agregarElementos(col1)
-		var elemento=$(".main-titulo")
-	
+	reponer()
+	var elemento=$(".main-titulo")	
 	blanco(elemento)
+
 })
 var minimo=1
-var maximo=4
+var maximo=3
 var columnas=7
 var filas=8	
 
@@ -32,21 +32,10 @@ function aleatorio(minimo,maximo){
   return Math.floor(Math.random() * ((maximo+1)-minimo)+minimo);
 
 }
-	var col1=new Array(7)
+	
 
 
-function agregarElementos(col){
-	for(var i=0;i<columnas;i++){
-		for(var j=0;j<filas;j++){
-			var col1=$(".col-"+[j])
-			col1.append("<img src='image/"+aleatorio(minimo,maximo)+".png'class='elemento'>")
-		}
 
-}
-chequeo()
-	var imagenes=$(".elemento")	
-			return imagenes
-}
 	
 
 function chequeo(){
@@ -114,13 +103,22 @@ for(var m=0;m<7;m++){
 		
 				
 	}		
-		
+	borrar()
 }
 
 
 
 function borrar(){
-	$(".eliminar").remove()
+	for(var i=0;i<6;i++){
+		$(".eliminar").fadeToggle("1200",function(){
+			$(".eliminar").fadeOut("3000", "linear", function(){
+		$(".eliminar").remove()
+		reponer()
+	})
+		})
+	}
+	
+	
 		
 }
 function agregarHijos(){
@@ -142,17 +140,21 @@ function reponer(){
 		
 		for(var i=veces; i<7;i++){
 			var contenido="<img src='image/"+aleatorio(minimo,maximo)+".png'class='elemento'>"
-			$(primogenito).before(contenido)		
+			var candy=$(primogenito).before(contenido).hide()
+			$(candy).slideDown(1000)
+			
+
 		}
 		if(veces==0){
-			for(var i=0;i<8;i++){
+			for(var i=0;i<7;i++){
 				var col=$(columnas)[j]
-				maximo=4
 				var contenido="<img src='image/"+aleatorio(minimo,maximo)+".png'class='elemento'>"
-				$(col).append(contenido)
+				var candys=$(col).append(contenido).hide()
+				$(candys).slideDown(1000)
 			}
 		}	
 	}
+	chequeo()
 	
 	
 	
