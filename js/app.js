@@ -47,9 +47,13 @@ chequeo()
 			return imagenes
 }
 	
-
+/*******SELLECION DE FILAS*******/
+/*
 function chequeo(){
-	var images=$(".col-1 .elemento")
+
+	for(var n=0;n<8;n++){
+
+		var images=$(".col-"+[n]+" .elemento")
 		var pictures=$(images)[0]
 		var hermanos=$(pictures).siblings()
 		var longitud=$(hermanos).length
@@ -76,21 +80,22 @@ function chequeo(){
 				while(brother){
 						var broNext=$(hermanos)[i+2]
 				var broNextAtr=$(broNext).attr("src")	
-					if((oniAtr==broNextAtr)&&(i!=(longitud-3))){
+					if((oniAtr==broNextAtr)&&(i!=(longitud-2))){
 					console.log(broNext)
 					$(broNext).addClass("eliminar")
 					i++
 				}else{brother=false}
-				}
-				
-						
+				}						
 			}
-
-		}
-		
-	
+		}		
+	}		
+}*/
+function borrar(){
+	$(".eliminar").remove()
+	$(".eliminar").removeClass("eliminar")
 	
 }
+
 	
 
 
