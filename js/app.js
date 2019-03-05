@@ -1,19 +1,66 @@
 $(function(){
 
-	reponer()
+	inicio()
 	var elemento=$(".main-titulo")	
-	blanco(elemento)
+	blanco(elemento)//CAMBIO DE COLOR DEL TITULO
 
 })
-var minimo=1
-var maximo=3
-var columnas=7
-var filas=8	
 
+
+
+var numMin=1;
+var numMax=4;
+var rbh=0;
+var rbv=0;
+var bnewd=0;
+var lencol=new Array(7)
+var lenres=new Array(7)
+var maximo=0;
+var matriz=0;
+
+var intervalo=0;  //variable de tiempo para funcion de desplazamiento
+var eliminar=0;   //variable de tiempo para eliminar dulces
+var newdulces=0;  //variable de tiempo para nuevos dulces
+var tiempo=0;     //variable de tiempo para temporizador
+
+var i=0;
+var contador=0;  //contador total
+var conc1=0;    //contador columna1
+
+var initialPos;
+var espera=0;
+var score=0;
+var mov=0;
+
+var min=2;
+var seg=0;
+//----------Boton de inicio/reinicio--------------------------------------------------
+$(".btn-reinicio").click(function(){
+  i=0;
+  score=0;
+  mov=0;
+  $(".panel-score").css("width","25%");
+  $(".panel-tablero").show();
+  $(".time").show();
+
+  $("#score-text").html("0")
+  $("#movimientos-text").html("0")
+  $(this).html("Reiniciar")
+  clearInterval(intervalo);
+  clearInterval(eliminar);
+  clearInterval(newdulces);
+  clearInterval(tiempo);
+  min=2;  //2
+  seg=0;  //0
+  borrartotal()
+  intervalo=setInterval(function(){desplazamiento()},600)
+  tiempo=setInterval(function(){timer()},1000)
+})
+//----------funcion de cambio de color del titulo------------------------------------------
 function blanco(elemento){
 	$(elemento).animate({
 		color:"#fff"
-	},2000,function(elemento){
+	},1000,function(elemento){
 		amarillo(this)
 	})
 	
@@ -21,147 +68,268 @@ function blanco(elemento){
 function amarillo(elemento){
 	$(elemento).animate({
 		color:"#DCFF0E"
-	},2000,function(elemento){
+	},1000,function(elemento){
 		blanco(this)
 	})
 	
 }
 
-
-function aleatorio(minimo,maximo){
-  return Math.floor(Math.random() * ((maximo+1)-minimo)+minimo);
-
+//----------funcion de contador a cero------------------------------------------
+function timer()
+{
+  if(seg!=0)
+  {
+    seg=seg-1;
+  }
+  if(seg==0)
+  {
+    if(min==0)
+    {
+      clearInterval(eliminar);
+      clearInterval(newdulces);
+      clearInterval(intervalo);
+      clearInterval(tiempo);
+      $( ".panel-tablero" ).hide("drop","slow",callback);
+      $( ".time" ).hide();
+    }
+    seg=59;
+    min=min-1;
+  }
+  $("#timer").html("0"+min+":"+seg)
 }
-	
-
-
-
-	
-
-function chequeo(){
-	$(".eliminar").removeClass("eliminar")
-/*******SELLECION DE COLUMNAS*******/
-	for(var n=0;n<8;n++){
-		var images=$(".col-"+[n]+" .elemento")
-		var pictures=$(images)[0]
-		var hermanos=$(pictures).siblings()
-		var longitud=$(hermanos).length
-		for(var i=0;i<(longitud);i++){
-			var oniichan=$(images)[i]
-			var oniAtr=$(oniichan).attr("src")
-			bro1=$(hermanos)[i]
-			bro2=$(hermanos)[i+1]
-			var hermanosSRC1=$(bro1).attr("src")
-			var hermanosSRC2=$(bro2).attr("src")
-
-			if((oniAtr==hermanosSRC1)&&(oniAtr==hermanosSRC2)){				
-				$(oniichan).addClass("eliminar")
-				$(bro1).addClass("eliminar")
-				$(bro2).addClass("eliminar")				
-				var brother=true
-				while(brother){
-						var broNext=$(hermanos)[i+2]
-				var broNextAtr=$(broNext).attr("src")	
-					if((oniAtr==broNextAtr)&&(i!=(longitud-2))){
-					$(broNext).addClass("eliminar")
-					i++
-				}else{brother=false}
-				}						
-			}
-		}	
-	}
-
-
-	/*******SELLECION DE FILAS*******/
-for(var m=0;m<7;m++){
-		var tablero=$(".panel-tablero div[class^='col-']")	
-		var primerHijo=$(tablero).children()[m]
-		
-		var hermanosFila=$(tablero).siblings()
-		var herFi=hermanosFila.length
-		
-		for(var v=0;v<5;v++){
-			var padre=$(hermanosFila)[v]
-			var hijo=$(padre).children()[m]
-			var hijoatr=$(hijo).attr("src")
-			var padrastro=$(hermanosFila)[v+1]
-			var padrastro2=$(hermanosFila)[v+2]
-			var hermano1=$(padrastro).children()[m]
-			var hermano2=$(padrastro2).children()[m]
-			var her1atr=$(hermano1).attr("src")
-			var her2atr=$(hermano2).attr("src")
-			
-			
-			if((hijoatr==her1atr)&&(hijoatr)==her2atr){
-				$(hijo).addClass("eliminar")
-				$(hermano1).addClass("eliminar")
-				$(hermano2).addClass("eliminar")
-			}
-	
-		}
-
-		
-				
-	}		
-	borrar()
+//------------------------------------------------------------------------------
+function callback()
+{
+    $( ".panel-score" ).animate({width:'100%'},4000);
 }
-
-
-
-function borrar(){
-	for(var i=0;i<6;i++){
-		$(".eliminar").fadeToggle("1200",function(){
-			$(".eliminar").fadeOut("3000", "linear", function(){
-		$(".eliminar").remove()
-		reponer()
-	})
-		})
-	}
-	
-	
-		
+//----------Funcion de borrado--------------------------------------------------
+function borrartotal()
+{
+  for(var j=1;j<8;j++)
+  {
+    $(".col-"+j).children("img").detach();
+  }
 }
-function agregarHijos(){
-	borrar()
-	var tablero=$(".panel-tablero div[class^='col-']")	
-		var tablero=$(tablero)[0]
-		var primerHijo=$(tablero).children()
-		var long=$(primerHijo).length
-		reponer()	
+//---------------Funcion inicial para llenar el cuadro del juego----------------
+function desplazamiento()
+{
+  i=i+1
+  var numero=0;
+  var imagen=0;
+
+  $(".elemento").draggable({ disabled: true });
+  if(i<8)
+  {
+    for(var j=1;j<8;j++)
+    {
+      if($(".col-"+j).children("img:nth-child("+i+")").html()==null)
+      {
+        numero=aleatorio(numMin,numMax)
+        imagen="image/"+numero+".png";
+        $(".col-"+j).prepend("<img src="+imagen+" class='elemento'/>").css("justify-content","flex-start")
+      }
+    }
+  }
+  if(i==8)
+  {
+    clearInterval(intervalo);   //desactivar funcion desplazamiento()
+    eliminar=setInterval(function(){eliminarhorver()},150)  //activar funcion eliminarhorver
+  }
 }
-function reponer(){
-	var columnas=$(".panel-tablero div[class^='col-']")
-	for(var j=0; j<7;j++){
-		var columna1=$(columnas)[j]
-		var hijos=$(columna1).children()
-		var primogenito=$(hijos)[0]
-		var veces=$(hijos).length
-		console.log(veces)	
-		
-		for(var i=veces; i<7;i++){
-			var contenido="<img src='image/"+aleatorio(minimo,maximo)+".png'class='elemento'>"
-			var candy=$(primogenito).before(contenido).hide()
-			$(candy).slideDown(1000)
-			
-
-		}
-		if(veces==0){
-			for(var i=0;i<7;i++){
-				var col=$(columnas)[j]
-				var contenido="<img src='image/"+aleatorio(minimo,maximo)+".png'class='elemento'>"
-				var candys=$(col).append(contenido).hide()
-				$(candys).slideDown(1000)
-			}
-		}	
-	}
-	chequeo()
-	
-	
-	
-
+//------------------------------------------------------------------------------
+//---------------Funcion para obtener un numero al azar--------------------------
+function aleatorio(numMin,numMax){
+  return Math.floor(Math.random() * ((numMax+1)-numMin)+numMin);
 }
+/************************************/
+//---------------Funcion para eliminar mas de 3 dulces--------------------------
+function eliminarhorver()
+{
+  matriz=0;
+  rbh=horizontal()  //funcion busqueda dulces horizontal
+  rbv=vertical()    //funcion buscar dulces vertical
 
+  for(var j=1;j<8;j++)
+  {
+      matriz=matriz+$(".col-"+j).children().length;
+  }
 
+  if(rbh==0 && rbv==0 && matriz!=49)  //condicion si no encuentra 3 dulces o mas llamar a funcion para volver a completar el uego
+  {
+      clearInterval(eliminar);
+      bnewd=0;
+      newdulces=setInterval(function()
+      {
+        nuevosdulces()  //Funcion completar nuevos dulces
+      },600)
+  }
+  if(rbh==1 || rbv==1)
+  {
+    $(".elemento").draggable({ disabled: true });
+    $("div[class^='col']").css("justify-content","flex-end")
+    $(".activo").hide("pulsate",1000,function(){
+      var scoretmp=$(".activo").length;
+      $(".activo").remove("img")
+      score=score+scoretmp;
+      $("#score-text").html(score)  //Cambiar puntuacion
+    })
+  }
 
+  if(rbh==0 && rbv==0 && matriz==49)
+  {
+    $(".elemento").draggable({
+      disabled: false,
+      containment: ".panel-tablero",
+      revert: true,
+      revertDuration: 0,
+      snap: ".elemento",
+      snapMode: "inner",
+      snapTolerance: 40,
+      start: function(event, ui){
+        mov=mov+1;
+        $("#movimientos-text").html(mov)
+      }
+    });
+  }
 
-
+  $(".elemento").droppable({
+    drop: function (event, ui) {
+      var dropped = ui.draggable;
+      var droppedOn = this;
+      espera=0;
+      do{
+        espera=dropped.swap($(droppedOn));
+      }while(espera==0)
+      rbh=horizontal()  //funcion busqueda dulces horizontal
+      rbv=vertical()    //funcion buscar dulces vertical
+      if(rbh==0 && rbv==0)
+      {
+        dropped.swap($(droppedOn));
+      }
+      if(rbh==1 || rbv==1)
+      {
+        clearInterval(newdulces);
+        clearInterval(eliminar);   //desactivar funcion desplazamiento()
+        eliminar=setInterval(function(){eliminarhorver()},150)  //activar funcion eliminarhorver
+      }
+    },
+  });
+}
+//------------------------------------------------------------------------------
+//---------Funcion para intercambiar dulces-------------------------------------
+jQuery.fn.swap = function(b)
+{
+    b = jQuery(b)[0];
+    var a = this[0];
+    var t = a.parentNode.insertBefore(document.createTextNode(''), a);
+    b.parentNode.insertBefore(a, b);
+    t.parentNode.insertBefore(b, t);
+    t.parentNode.removeChild(t);
+    return this;
+};
+//------------------------------------------------------------------------------
+//---------Funcion de nuevos dulces---------------------------------------------
+function nuevosdulces()
+{
+  $(".elemento").draggable({ disabled: true });
+  //alert("pase")
+  $("div[class^='col']").css("justify-content","flex-start")
+  for(var j=1;j<8;j++)
+  {
+      lencol[j-1]=$(".col-"+j).children().length;
+  }
+  if(bnewd==0)
+  {
+    for(var j=0;j<7;j++)
+    {
+      lenres[j]=(7-lencol[j]);
+    }
+    maximo=Math.max.apply(null,lenres);
+    contador=maximo;
+  }
+  if(maximo!=0)
+  {
+    if(bnewd==1)
+    {
+      for(var j=1;j<8;j++)
+      {
+        if(contador>(maximo-lenres[j-1]))
+        {
+          $(".col-"+j).children("img:nth-child("+(lenres[j-1])+")").remove("img")
+        }
+      }
+    }
+    if(bnewd==0)
+    {
+      bnewd=1;
+      for(var k=1;k<8;k++)
+      {
+        for(var j=0;j<(lenres[k-1]-1);j++)
+        {
+            $(".col-"+k).prepend("<img src='' class='elemento' style='visibility:hidden'/>")
+        }
+      }
+    }
+    for(var j=1;j<8;j++)
+    {
+      if(contador>(maximo-lenres[j-1]))
+      {
+        numero=Math.floor(Math.random() * 4) + 1 ;
+        imagen="image/"+numero+".png";
+        $(".col-"+j).prepend("<img src="+imagen+" class='elemento'/>")
+      }
+    }
+  }
+  if(contador==1)
+  {
+      clearInterval(newdulces);
+      eliminar=setInterval(function(){eliminarhorver()},150)
+  }
+  contador=contador-1;
+}
+//------------------------------------------------------------------------------
+//----------funcion de busqueda horizontal de dulces----------------------------
+function horizontal()
+{
+  var bh=0;
+  for(var j=1;j<8;j++)
+  {
+    for(var k=1;k<6;k++)
+    {
+      var res1=$(".col-"+k).children("img:nth-last-child("+j+")").attr("src")
+      var res2=$(".col-"+(k+1)).children("img:nth-last-child("+j+")").attr("src")
+      var res3=$(".col-"+(k+2)).children("img:nth-last-child("+j+")").attr("src")
+      if((res1==res2) && (res2==res3) && (res1!=null) && (res2!=null) && (res3!=null))
+      {
+          $(".col-"+k).children("img:nth-last-child("+(j)+")").attr("class","elemento activo")
+          $(".col-"+(k+1)).children("img:nth-last-child("+(j)+")").attr("class","elemento activo")
+          $(".col-"+(k+2)).children("img:nth-last-child("+(j)+")").attr("class","elemento activo")
+          bh=1;
+      }
+    }
+  }
+  return bh;
+}
+//------------------------------------------------------------------------------
+//----------Funcion de busqueda vertical de dulces------------------------------
+function vertical()
+{
+  var bv=0;
+  for(var l=1;l<6;l++)
+  {
+    for(var k=1;k<8;k++)
+    {
+      var res1=$(".col-"+k).children("img:nth-child("+l+")").attr("src")
+      var res2=$(".col-"+k).children("img:nth-child("+(l+1)+")").attr("src")
+      var res3=$(".col-"+k).children("img:nth-child("+(l+2)+")").attr("src")
+      if((res1==res2) && (res2==res3) && (res1!=null) && (res2!=null) && (res3!=null))
+      {
+          $(".col-"+k).children("img:nth-child("+(l)+")").attr("class","elemento activo")
+          $(".col-"+k).children("img:nth-child("+(l+1)+")").attr("class","elemento activo")
+          $(".col-"+k).children("img:nth-child("+(l+2)+")").attr("class","elemento activo")
+          bv=1;
+      }
+    }
+  }
+  return bv;
+}
